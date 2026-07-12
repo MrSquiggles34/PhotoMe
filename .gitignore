@@ -1,0 +1,15 @@
+# Ignore heavy build folders
+bin/
+obj/
+
+# Ignore Visual Studio temporary files
+.vs/
+*.user
+*.suo
+*.sln
+*.vcxproj
+*.filters
+
+# Ignore Mac/Linux temporary files
+.DS_Store
+*.o

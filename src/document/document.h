@@ -23,6 +23,7 @@ public:
 	Layer* FindLayerByID(LayerID id);
 
 	bool HasLayers() const;
+	bool HasCanvas() const;
 
 	// Sets
 	void SetActiveLayer(LayerID id);

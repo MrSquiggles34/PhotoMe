@@ -4,15 +4,34 @@
 Document::Document() {
 }
 
-void Document::AddLayer() {
-	Layer newLayer(width, height, nextLayerID++);
-	layers.push_back(std::move(newLayer));
+void Document::AddLayer()
+{
+    if (width <= 0 || height <= 0)
+    {
+        ofLogWarning()
+            << "Cannot create layer: no document size set.";
+
+        return;
+    }
+
+    LayerID id = nextLayerID++;
+
+    Layer layer(width, height, id);
+
+    layer.SetName(
+        "Layer " + std::to_string(id)
+    );
+
+    layers.push_back(std::move(layer));
+
+    activeLayerID = id;
 }
 
-bool Document::LoadImage(const std::string& path) {
+bool Document::LoadImage(const std::string & path) {
 	std::string resolvedPath = ofToDataPath(path, true);
 
 	ofImage image;
+
 	if (!image.load(resolvedPath)) {
 		ofLogError() << "Failed to load " << path;
 		return false;
@@ -23,9 +42,18 @@ bool Document::LoadImage(const std::string& path) {
 
 	layers.clear();
 
-	layers.emplace_back(width, height, nextLayerID++);
-	layers.back().SetImage(image);
-	activeLayerID = layers.back().GetID();
+	LayerID id = nextLayerID++;
+
+	Layer layer(width, height, id);
+
+	layer.SetName(
+		"Layer " + std::to_string(id));
+
+	layer.SetImage(image);
+
+	layers.push_back(std::move(layer));
+
+	activeLayerID = id;
 
 	return true;
 }
@@ -79,6 +107,10 @@ void Document::RemoveLayer(size_t index) {
 
 bool Document::HasLayers() const {
 	return !layers.empty();
+}
+
+bool Document::HasCanvas() const {
+	return width > 0 && height > 0;
 }
 
 // Sets

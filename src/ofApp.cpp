@@ -20,6 +20,6 @@ void ofApp::draw() {
 
 void ofApp::keyPressed(int key) {
 	if (key == 'l') {
-		editor->GetDocument()->LoadImage("test.png");
+		editor->LoadImageLayer("test.png");
 	}
 }

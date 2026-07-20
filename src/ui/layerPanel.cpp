@@ -39,18 +39,19 @@ void LayerPanel::Refresh() {
 
 	Document* document = editor->GetDocument();
 
-	for (const Layer & layer : document->GetLayers()) {
+	const auto & layers = document->GetLayers();
 
-		auto* item = new QListWidgetItem(QString::fromUtf8(layer.GetName().c_str()));
+	for (auto it = layers.rbegin(); it != layers.rend(); ++it) {
+		const Layer & layer = *it;
 
-		// Store the LayerID inside the item
+		auto * item = new QListWidgetItem(QString::fromUtf8(layer.GetName().c_str()));
+
 		item->setData(Qt::UserRole, QVariant::fromValue<qulonglong>(layer.GetID()));
 
 		layerList->addItem(item);
 
-		if (layer.GetID() == document->GetActiveLayerID()) {
+		if (layer.GetID() == document->GetActiveLayerID())
 			layerList->setCurrentItem(item);
-		}
 	}
 }
 
@@ -72,34 +73,40 @@ void LayerPanel::OnAddLayer() {
 }
 
 void LayerPanel::OnDeleteLayer() {
-	int row = layerList->currentRow();
+	auto * item = layerList->currentItem();
 
-	if (row < 0)
+	if (!item)
 		return;
 
-	editor->GetDocument()->RemoveLayer(row);
+	LayerID id = item->data(Qt::UserRole).toULongLong();
+
+	editor->GetDocument()->RemoveLayer(id);
 
 	Refresh();
 }
 
 void LayerPanel::OnMoveLayerUp() {
-	int row = layerList->currentRow();
+	auto * item = layerList->currentItem();
 
-	if (row < 0)
+	if (!item)
 		return;
 
-	editor->GetDocument()->MoveLayerUp(row);
+	LayerID id = item->data(Qt::UserRole).toULongLong();
+
+	editor->GetDocument()->MoveLayerUp(id);
 
 	Refresh();
 }
 
 void LayerPanel::OnMoveLayerDown() {
-	int row = layerList->currentRow();
+	auto * item = layerList->currentItem();
 
-	if (row < 0)
+	if (!item)
 		return;
 
-	editor->GetDocument()->MoveLayerDown(row);
+	LayerID id = item->data(Qt::UserRole).toULongLong();
+
+	editor->GetDocument()->MoveLayerDown(id);
 
 	Refresh();
 }

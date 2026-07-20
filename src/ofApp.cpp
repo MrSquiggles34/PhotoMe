@@ -19,7 +19,19 @@ void ofApp::draw() {
 }
 
 void ofApp::keyPressed(int key) {
+	if (key == 'j') {
+		editor->AddImageLayer("test.png");
+	}
+
+	if (key == 'k') {
+		editor->AddImageLayer("test2.png");
+	}
+
 	if (key == 'l') {
-		editor->LoadImageLayer("test.png");
+		editor->AddImageLayer("test3.png");
+	}
+
+	if (key == 'v') {
+		editor->GetDocument()->GetActiveLayer()->SetVisible(!editor->GetDocument()->GetActiveLayer()->IsVisible());
 	}
 }

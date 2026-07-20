@@ -10,17 +10,17 @@ class Document {
 public:
 	Document();
 
-	bool LoadImage(const std::string & path);
-
 	void AddLayer();
-	void RemoveLayer(size_t index);
+	bool AddImageLayer(const std::string & path);
 
 	void MoveLayer(size_t from, size_t to);
+	void RemoveLayer(LayerID id);
+	void MoveLayerUp(LayerID id);
+	void MoveLayerDown(LayerID id);
 
-	void MoveLayerUp(size_t index);
-	void MoveLayerDown(size_t index);
 
 	Layer* FindLayerByID(LayerID id);
+	size_t GetLayerIndexByID(LayerID id) const;
 
 	bool HasLayers() const;
 	bool HasCanvas() const;

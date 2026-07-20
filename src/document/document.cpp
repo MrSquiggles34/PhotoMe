@@ -27,7 +27,7 @@ void Document::AddLayer()
     activeLayerID = id;
 }
 
-bool Document::LoadImage(const std::string & path) {
+bool Document::AddImageLayer(const std::string & path) {
 	std::string resolvedPath = ofToDataPath(path, true);
 
 	ofImage image;
@@ -37,10 +37,11 @@ bool Document::LoadImage(const std::string & path) {
 		return false;
 	}
 
-	width = image.getWidth();
-	height = image.getHeight();
-
-	layers.clear();
+	// First imported image defines canvas size
+	if (!HasCanvas()) {
+		width = image.getWidth();
+		height = image.getHeight();
+	}
 
 	LayerID id = nextLayerID++;
 
@@ -80,31 +81,53 @@ void Document::MoveLayer(size_t from, size_t to) {
 	layers.insert(layers.begin() + to, std::move(layer));
 }
 
-void Document::MoveLayerUp(size_t index) {
+void Document::MoveLayerUp(LayerID id) {
+	size_t index = GetLayerIndexByID(id);
+
+	if (index == layers.size())
+		return;
+
 	if (index + 1 < layers.size())
 		MoveLayer(index, index + 1);
 }
 
-void Document::MoveLayerDown(size_t index) {
+void Document::MoveLayerDown(LayerID id) {
+	size_t index = GetLayerIndexByID(id);
+
+	if (index == layers.size())
+		return; // Layer not found
+
 	if (index > 0)
 		MoveLayer(index, index - 1);
 }
 
-void Document::RemoveLayer(size_t index) {
+void Document::RemoveLayer(LayerID id) {
+	size_t index = GetLayerIndexByID(id);
 
-	LayerID removedID = layers[index].GetID();
+	if (index == layers.size())
+		return; // Layer not found
 
 	layers.erase(layers.begin() + index);
 
-	if (removedID == activeLayerID) {
-		if (!layers.empty())
+	if (id == activeLayerID) {
+		if (!layers.empty()) {
+			// Make the top-most remaining layer active
 			activeLayerID = layers.back().GetID();
-		else
+		} else {
 			activeLayerID = 0;
+		}
 	}
-	
 }
 
+size_t Document::GetLayerIndexByID(LayerID id) const {
+	for (size_t i = 0; i < layers.size(); ++i) {
+		if (layers[i].GetID() == id)
+			return i;
+	}
+	return layers.size();
+}
+
+// Status checks
 bool Document::HasLayers() const {
 	return !layers.empty();
 }
@@ -137,4 +160,10 @@ size_t Document::GetLayerCount() const {
 	return layers.size();
 }
 
+int Document::GetWidth() const {
+	return width;
+}
 
+int Document::GetHeight() const {
+	return height;
+}

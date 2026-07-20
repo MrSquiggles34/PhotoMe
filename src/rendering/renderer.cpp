@@ -5,13 +5,31 @@
 
 void Renderer::Draw(const Document& document, const Camera2D& camera) {
 
+	CompositeLayers(document);
+
 	ofPushMatrix();
 
-	ofTranslate(camera.position.x, camera.position.y);
-	ofScale(camera.zoom, camera.zoom);
+	ApplyCamera(camera);
 
-	const auto & layers = document.GetLayers();
+	compositeFbo.draw(0, 0);
 
+	ofPopMatrix();
+}
+
+void Renderer::CompositeLayers(const Document & document) {
+	if (!document.HasCanvas())
+		return;
+
+	const auto& layers = document.GetLayers();
+	int width = document.GetWidth();
+	int height = document.GetHeight();
+
+	if (compositeFbo.getWidth() != width || compositeFbo.getHeight() != height) {
+		compositeFbo.allocate(width, height, GL_RGBA8);
+	}
+
+	compositeFbo.begin();
+	ofClear(0, 0, 0, 0);
 	for (const Layer& layer : layers) {
 
 		if (!layer.IsVisible())
@@ -22,6 +40,10 @@ void Renderer::Draw(const Document& document, const Camera2D& camera) {
 	}
 
 	ofSetColor(255);
+	compositeFbo.end();
+}
 
-	ofPopMatrix();
+void Renderer::ApplyCamera(const Camera2D & camera) {
+	ofTranslate(camera.position);
+	ofScale(camera.zoom, camera.zoom);
 }

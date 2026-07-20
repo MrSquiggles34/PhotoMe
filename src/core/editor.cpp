@@ -83,8 +83,8 @@ void Editor::SetCameraZoom() {
 	}
 }
 
-bool Editor::LoadImageLayer(const std::string& path) {
-	bool success = document->LoadImage(path);
+bool Editor::AddImageLayer(const std::string& path) {
+	bool success = document->AddImageLayer(path);
 
 	if (success) {
 		layerPanel->Refresh();

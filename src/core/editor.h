@@ -22,7 +22,7 @@ class Editor {
 		void SetCameraPosition();
 		void SetCameraZoom();
 
-		bool LoadImageLayer(const std::string& path);
+		bool AddImageLayer(const std::string & path);
 
 		Document* GetDocument();
 		Renderer* GetRenderer();

@@ -4,14 +4,14 @@
 Document::Document() {
 }
 
-void Document::AddLayer()
+LayerID Document::AddLayer()
 {
     if (width <= 0 || height <= 0)
     {
         ofLogWarning()
             << "Cannot create layer: no document size set.";
 
-        return;
+        return InvalidLayerID;
     }
 
     LayerID id = nextLayerID++;
@@ -25,6 +25,8 @@ void Document::AddLayer()
     layers.push_back(std::move(layer));
 
     activeLayerID = id;
+
+	return id;
 }
 
 bool Document::AddImageLayer(const std::string & path) {
@@ -125,6 +127,28 @@ size_t Document::GetLayerIndexByID(LayerID id) const {
 			return i;
 	}
 	return layers.size();
+}
+
+void Document::InsertLayer(size_t index, Layer layer) {
+	if (index > layers.size())
+		index = layers.size();
+	layers.insert(layers.begin() + index, std::move(layer));
+}
+
+Layer Document::TakeLayer(LayerID id) {
+	size_t index = GetLayerIndexByID(id);
+
+	Layer layer = std::move(layers[index]);
+	layers.erase(layers.begin() + index);
+
+	if (id == activeLayerID) {
+		if (!layers.empty())
+			activeLayerID = layers.back().GetID();
+		else
+			activeLayerID = InvalidLayerID;
+	}
+
+	return layer;
 }
 
 // Status checks

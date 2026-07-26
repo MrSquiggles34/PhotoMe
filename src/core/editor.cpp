@@ -5,13 +5,18 @@
 #include "../ui/layerPanel.h"
 #include "../rendering/camera2D.h"
 
+#include "../commands/addLayerCommand.h"
+#include "../commands/removeLayerCommand.h"
+#include "../commands/moveLayerUpCommand.h"
+#include "../commands/moveLayerDownCommand.h"
+
 Editor::Editor() = default;
 Editor::~Editor() = default;
 
 void Editor::Setup() {
 	document = std::make_unique<Document>();
 	renderer = std::make_unique<Renderer>();
-	commands = std::make_unique<CommandManager>();
+	commandManager = std::make_unique<CommandManager>();
 	camera = std::make_unique<Camera2D>();
 
 	layerPanel = std::make_unique<LayerPanel>(this);
@@ -37,7 +42,7 @@ Renderer* Editor::GetRenderer() {
 	return renderer.get();
 }
 CommandManager* Editor::GetCommandManager() {
-	return commands.get();
+	return commandManager.get();
 }
 
 Camera2D* Editor::GetCamera() {
@@ -91,4 +96,53 @@ bool Editor::AddImageLayer(const std::string& path) {
 	}
 
 	return success;
+}
+
+void Editor::AddLayer() {
+	commandManager->Execute(std::make_unique<AddLayerCommand>(document.get()));
+	layerPanel->Refresh();
+}
+
+void Editor::RemoveLayer(LayerID id) {
+	commandManager->Execute(std::make_unique<RemoveLayerCommand>(document.get(), id));
+	layerPanel->Refresh();
+}
+
+void Editor::MoveLayerUp(LayerID id) {
+	commandManager->Execute(std::make_unique<MoveLayerUpCommand>(document.get(), id));
+	layerPanel->Refresh();
+}
+
+void Editor::MoveLayerDown(LayerID id) {
+	commandManager->Execute(std::make_unique<MoveLayerDownCommand>(document.get(), id));
+	layerPanel->Refresh();
+}
+
+void Editor::SetActiveLayer(LayerID id) {
+	document->SetActiveLayer(id);
+}
+
+void Editor::RefreshLayerPanel() {
+	layerPanel->Refresh();
+}
+
+std::vector<LayerInfo> Editor::GetLayerInfo() const {
+
+	std::vector<LayerInfo> result;
+
+	const auto & layers = document->GetLayers();
+
+	for (auto it = layers.rbegin(); it != layers.rend(); ++it) {
+
+		LayerInfo info;
+
+		info.id = it->GetID();
+		info.name = it->GetName();
+		info.visible = it->IsVisible();
+		info.selected = (info.id == document->GetActiveLayerID());
+
+		result.push_back(info);
+	}
+
+	return result;
 }

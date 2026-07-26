@@ -1,5 +1,7 @@
 #pragma once
 
-#include <cstdint>
+#include <limits>
 
-using LayerID = std::uint64_t;
+using LayerID = std::size_t;
+
+constexpr LayerID InvalidLayerID = std::numeric_limits<LayerID>::max();

@@ -1,6 +1,7 @@
 #include "ofApp.h"
 #include "core/editor.h"
 #include "document/document.h"
+#include "commands/commandManager.h"
 
 ofApp::ofApp() = default;
 ofApp::~ofApp() = default;
@@ -33,5 +34,15 @@ void ofApp::keyPressed(int key) {
 
 	if (key == 'v') {
 		editor->GetDocument()->GetActiveLayer()->SetVisible(!editor->GetDocument()->GetActiveLayer()->IsVisible());
+	}
+
+	if (key == 'z') {
+		editor->GetCommandManager()->Undo();
+		editor->RefreshLayerPanel();
+	}
+
+	if (key == 'y') {
+		editor->GetCommandManager()->Redo();
+		editor->RefreshLayerPanel();
 	}
 }

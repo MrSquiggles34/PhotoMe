@@ -1,8 +1,7 @@
 #include "layerPanel.h"
 
 #include "../core/editor.h"
-#include "../document/document.h"
-#include "../document/layer.h"
+
 
 LayerPanel::LayerPanel(Editor* editor, QWidget* parent): QWidget(parent), editor(editor) {
 	layerList = new QListWidget(this);
@@ -37,21 +36,20 @@ LayerPanel::LayerPanel(Editor* editor, QWidget* parent): QWidget(parent), editor
 void LayerPanel::Refresh() {
 	layerList->clear();
 
-	Document* document = editor->GetDocument();
+	auto layers = editor->GetLayerInfo();
 
-	const auto & layers = document->GetLayers();
+	for (const LayerInfo & layer : layers) {
 
-	for (auto it = layers.rbegin(); it != layers.rend(); ++it) {
-		const Layer & layer = *it;
+		auto * item = new QListWidgetItem(QString::fromUtf8(layer.name.c_str()));
 
-		auto * item = new QListWidgetItem(QString::fromUtf8(layer.GetName().c_str()));
-
-		item->setData(Qt::UserRole, QVariant::fromValue<qulonglong>(layer.GetID()));
+		// Store the LayerID inside the item
+		item->setData(Qt::UserRole, QVariant::fromValue<qulonglong>(layer.id));
 
 		layerList->addItem(item);
 
-		if (layer.GetID() == document->GetActiveLayerID())
+		if (layer.selected) {
 			layerList->setCurrentItem(item);
+		}
 	}
 }
 
@@ -63,13 +61,11 @@ void LayerPanel::OnLayerSelected() {
 
 	LayerID id = item->data(Qt::UserRole).toULongLong();
 
-	editor->GetDocument()->SetActiveLayer(id);
+	editor->SetActiveLayer(id);
 }
 
 void LayerPanel::OnAddLayer() {
-	editor->GetDocument()->AddLayer();
-
-	Refresh();
+	editor->AddLayer();
 }
 
 void LayerPanel::OnDeleteLayer() {
@@ -80,9 +76,7 @@ void LayerPanel::OnDeleteLayer() {
 
 	LayerID id = item->data(Qt::UserRole).toULongLong();
 
-	editor->GetDocument()->RemoveLayer(id);
-
-	Refresh();
+	editor->RemoveLayer(id);
 }
 
 void LayerPanel::OnMoveLayerUp() {
@@ -93,9 +87,7 @@ void LayerPanel::OnMoveLayerUp() {
 
 	LayerID id = item->data(Qt::UserRole).toULongLong();
 
-	editor->GetDocument()->MoveLayerUp(id);
-
-	Refresh();
+	editor->MoveLayerUp(id);
 }
 
 void LayerPanel::OnMoveLayerDown() {
@@ -106,7 +98,5 @@ void LayerPanel::OnMoveLayerDown() {
 
 	LayerID id = item->data(Qt::UserRole).toULongLong();
 
-	editor->GetDocument()->MoveLayerDown(id);
-
-	Refresh();
+	editor->MoveLayerDown(id);
 }

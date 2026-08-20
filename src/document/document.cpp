@@ -5,7 +5,7 @@ Document::Document() {
 }
 
 LayerID Document::AddLayer()
-{
+{	
     if (width <= 0 || height <= 0)
     {
         ofLogWarning()

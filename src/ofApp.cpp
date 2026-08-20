@@ -46,3 +46,15 @@ void ofApp::keyPressed(int key) {
 		editor->RefreshLayerPanel();
 	}
 }
+
+void ofApp::mousePressed(int x, int y, int button) {
+	editor->MousePressed(x, y);
+}
+
+void ofApp::mouseDragged(int x, int y, int button) {
+	editor->MouseDragged(x, y);
+}
+
+void ofApp::mouseReleased(int x, int y, int button) {
+	editor->MouseReleased(x, y);
+}

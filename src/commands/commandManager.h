@@ -15,6 +15,7 @@ public:
 	CommandManager& operator=(const CommandManager &) = delete;
 
 	void Execute(std::unique_ptr<Command> command);
+	void Record(std::unique_ptr<Command> command);
 
 	void Undo();
 	void Redo();

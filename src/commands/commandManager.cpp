@@ -17,6 +17,14 @@ void CommandManager::Execute(std::unique_ptr<Command> command) {
 	redoStack.clear();
 }
 
+void CommandManager::Record(std::unique_ptr<Command> command) {
+    if (!command)
+        return;
+
+    undoStack.push_back(std::move(command));
+    redoStack.clear();
+}
+
 void CommandManager::Undo() {
 	if (undoStack.empty())
 		return;

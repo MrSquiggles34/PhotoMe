@@ -60,3 +60,4 @@ const string& Layer::GetName() const {
 LayerID Layer::GetID() const {
 	return id;
 }
+

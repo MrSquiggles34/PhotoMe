@@ -11,23 +11,43 @@ LayerPanel::LayerPanel(Editor* editor, QWidget* parent): QWidget(parent), editor
 	upButton = new QPushButton("Up", this);
 	downButton = new QPushButton("Down", this);
 
+	brushButton = new QPushButton("Brush", this);
+	eraserButton = new QPushButton("Erase", this);
+	selectButton = new QPushButton("Select", this);
+
+	// Layer buttons
 	auto* buttonLayout = new QHBoxLayout();
 	buttonLayout->addWidget(addButton);
 	buttonLayout->addWidget(deleteButton);
 	buttonLayout->addWidget(upButton);
 	buttonLayout->addWidget(downButton);
 
+	// Tool buttons
+	auto * toolButtonLayout = new QHBoxLayout();
+	toolButtonLayout->addWidget(brushButton);
+	toolButtonLayout->addWidget(eraserButton);
+	toolButtonLayout->addWidget(selectButton);
+
+	// Layout
 	auto* layout = new QVBoxLayout(this);
 	layout->addWidget(layerList);
 	layout->addLayout(buttonLayout);
+	layout->addLayout(toolButtonLayout);
 
 	setLayout(layout);
 
+	// Layers
 	connect(layerList, &QListWidget::itemSelectionChanged, this, &LayerPanel::OnLayerSelected);
 	connect(addButton, &QPushButton::clicked, this, &LayerPanel::OnAddLayer);
 	connect(deleteButton, &QPushButton::clicked, this, &LayerPanel::OnDeleteLayer);
 	connect(upButton, &QPushButton::clicked, this, &LayerPanel::OnMoveLayerUp);
 	connect(downButton, &QPushButton::clicked, this, &LayerPanel::OnMoveLayerDown);
+
+	// Tool buttons
+	connect(brushButton,&QPushButton::clicked, this, &LayerPanel::OnBrushTool);
+	connect(eraserButton, &QPushButton::clicked, this, &LayerPanel::OnEraserTool);
+	connect(selectButton, &QPushButton::clicked, this, &LayerPanel::OnRectangleSelectTool);
+
 
 	Refresh();
 }
@@ -52,6 +72,8 @@ void LayerPanel::Refresh() {
 		}
 	}
 }
+
+// Tool button handlers
 
 void LayerPanel::OnLayerSelected() {
 	auto * item = layerList->currentItem();
@@ -99,4 +121,17 @@ void LayerPanel::OnMoveLayerDown() {
 	LayerID id = item->data(Qt::UserRole).toULongLong();
 
 	editor->MoveLayerDown(id);
+}
+
+void LayerPanel::OnBrushTool() {
+	editor->SetBrushTool();
+}
+
+void LayerPanel::OnEraserTool() {
+	editor->SetBrushTool();
+	editor->ToggleBrushMode();
+}
+
+void LayerPanel::OnRectangleSelectTool() {
+	editor->SetRectangleSelectTool();
 }

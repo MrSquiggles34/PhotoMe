@@ -23,6 +23,10 @@ private:
 	void OnMoveLayerUp();
 	void OnMoveLayerDown();
 
+	void OnBrushTool();
+	void OnEraserTool();
+	void OnRectangleSelectTool();
+
 private:
 	Editor* editor = nullptr;
 
@@ -32,4 +36,8 @@ private:
 	QPushButton* deleteButton = nullptr;
 	QPushButton* upButton = nullptr;
 	QPushButton* downButton = nullptr;
+
+	QPushButton * brushButton = nullptr;
+	QPushButton * eraserButton = nullptr;
+	QPushButton * selectButton = nullptr;
 };

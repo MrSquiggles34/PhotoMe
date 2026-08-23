@@ -36,6 +36,7 @@ class Editor {
 
 		void SetBrushTool();
 		void SetRectangleSelectTool();
+		void ToggleStampTool();
 
 		void ExecuteCommand(std::unique_ptr<Command> command);
 		void RecordCommand(std::unique_ptr<Command> command);

@@ -33,8 +33,15 @@ void Selection::Clear() {
 }
 
 void Selection::SetRectangle(int x, int y, int width, int height) {
+
 	if (!mask.isAllocated())
 		return;
+
+	// An empty rectangle means "no selection".
+	if (width <= 0 || height <= 0) {
+		Clear();
+		return;
+	}
 
 	left = x;
 	top = y;
@@ -45,7 +52,7 @@ void Selection::SetRectangle(int x, int y, int width, int height) {
 
 	ofClear(0, 0, 0, 0);
 
-	ofSetColor(255, 255, 255, 255);
+	ofSetColor(255);
 	ofDrawRectangle(x, y, width, height);
 
 	ofSetColor(255);

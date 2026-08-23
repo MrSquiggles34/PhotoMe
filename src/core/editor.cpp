@@ -8,6 +8,7 @@
 #include "../tools/toolManager.h"
 #include "../tools/brushTool.h"
 #include "../tools/rectangleSelectTool.h"
+#include "../tools/poissonStampTool.h"
 
 #include "../commands/addLayerCommand.h"
 #include "../commands/removeLayerCommand.h"
@@ -41,25 +42,57 @@ void Editor::Update() {
 	SetCameraPosition();
 	SetCameraZoom();
 
+	PoissonStampTool * stamp = dynamic_cast<PoissonStampTool *>(
+		toolManager->GetTool());
+
+	if (stamp && stamp->IsActive()) {
+		stamp->Update();
+	}
 }
 
 void Editor::Draw() {
+
 	renderer->Draw(*document, *camera);
 
-	// Draw selection rectangle (in relation to the camera)
+	// Draw Poisson stamp preview
+	PoissonStampTool * stamp = dynamic_cast<PoissonStampTool *>(
+		toolManager->GetTool());
+
+	if (stamp && stamp->IsActive()) {
+
+		ofPushMatrix();
+
+		camera->Apply();
+
+		stamp->Draw();
+
+		ofPopMatrix();
+	}
+
+	// Draw selection rectangle
 	Selection * selection = GetSelection();
 
 	if (!selection || !selection->IsActive())
 		return;
 
-	glm::vec2 topLeft = camera->WorldToScreen(glm::vec2(selection->GetLeft(), selection->GetTop()));
+	glm::vec2 topLeft = camera->WorldToScreen(
+		glm::vec2(
+			selection->GetLeft(),
+			selection->GetTop()));
 
-	glm::vec2 bottomRight = camera->WorldToScreen(glm::vec2(selection->GetRight(), selection->GetBottom()));
+	glm::vec2 bottomRight = camera->WorldToScreen(
+		glm::vec2(
+			selection->GetRight(),
+			selection->GetBottom()));
 
 	ofNoFill();
 	ofSetColor(0, 120, 255);
 
-	ofDrawRectangle(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+	ofDrawRectangle(
+		topLeft.x,
+		topLeft.y,
+		bottomRight.x - topLeft.x,
+		bottomRight.y - topLeft.y);
 
 	ofFill();
 	ofSetColor(255);
@@ -141,6 +174,32 @@ void Editor::SetBrushTool() {
 void Editor::SetRectangleSelectTool() {
 	toolManager->SetTool(
 		std::make_unique<RectangleSelectTool>(this));
+}
+
+// Stamp Tool =================================================
+
+void Editor::ToggleStampTool() {
+
+	PoissonStampTool * stamp = dynamic_cast<PoissonStampTool *>(toolManager->GetTool());
+
+	// If stamp tool is already active, cancel it and return to brush.
+	if (stamp) {
+		stamp->CancelStamp();
+		SetBrushTool();
+		return;
+	}
+
+	// Otherwise create the stamp tool.
+	auto newStamp = std::make_unique<PoissonStampTool>(this);
+
+	// Capture the current selection.
+	if (!newStamp->StartStamp()) {
+		ofLogNotice() << "Cannot start stamp: no active selection.";
+		return;
+	}
+
+	// Transfer ownership to the ToolManager.
+	toolManager->SetTool(std::move(newStamp));
 }
 
 // Layer Management =================================================

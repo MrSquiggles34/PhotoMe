@@ -1,5 +1,6 @@
 #include "document.h"
 #include "layer.h"
+#include "../rendering/colorMixerEffect.h"
 
 Document::Document() {
 }
@@ -53,6 +54,18 @@ bool Document::AddImageLayer(const std::string & path) {
 		"Layer " + std::to_string(id));
 
 	layer.SetImage(image);
+
+	// TEMPORARY
+	auto colorMixer = std::make_unique<ColorMixerEffect>();
+
+	if (colorMixer->Setup()) {
+
+		colorMixer->SetHue(0.0f);
+		colorMixer->SetSaturation(0.0f);
+		colorMixer->SetLuminance(0.0f);
+
+		layer.AddEffect(std::move(colorMixer));
+	}
 
 	layers.push_back(std::move(layer));
 

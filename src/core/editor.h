@@ -20,6 +20,7 @@ class ToolManager;
 class Command;
 class BrushStrokeCommand;
 class Compositor;
+class ColorMixerPanel;
 
 class Editor {
 	public:
@@ -58,6 +59,8 @@ class Editor {
 
 		void ClearSelection();
 
+		void AddColorMixerEffect();
+
 		Document* GetDocument();
 		Renderer* GetRenderer();
 		CommandManager* GetCommandManager();
@@ -82,5 +85,6 @@ class Editor {
 		std::unique_ptr<BrushStrokeCommand> activeBrushStroke;
 		std::unique_ptr<Selection> selection;
 		std::unique_ptr<Compositor> compositor;
+		std::unique_ptr<ColorMixerPanel> colorMixerPanel;
 
 };

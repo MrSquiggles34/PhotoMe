@@ -14,8 +14,10 @@
 #include "../commands/removeLayerCommand.h"
 #include "../commands/moveLayerUpCommand.h"
 #include "../commands/moveLayerDownCommand.h"
-
 #include "../commands/brushStrokeCommand.h"
+
+#include "../rendering/colorMixerEffect.h"
+#include "../ui/colorMixerPanel.h"
 
 Editor::Editor() = default;
 Editor::~Editor() = default;
@@ -35,6 +37,10 @@ void Editor::Setup() {
 	layerPanel = std::make_unique<LayerPanel>(this);
 	layerPanel->resize(300, 500);
 	layerPanel->show();
+
+	colorMixerPanel = std::make_unique<ColorMixerPanel>(this);
+	colorMixerPanel->resize(300, 250);
+	colorMixerPanel->show();
 }
 
 void Editor::Update() {
@@ -233,6 +239,9 @@ void Editor::RecordCommand(std::unique_ptr<Command> command) {
 
 void Editor::SetActiveLayer(LayerID id) {
 	document->SetActiveLayer(id);
+
+	if (colorMixerPanel)
+		colorMixerPanel->Refresh();
 }
 
 
@@ -410,4 +419,29 @@ void Editor::ClearSelection() {
 		return;
 
 	selection->Clear();
+}
+
+// Shaders ===================================================
+void Editor::AddColorMixerEffect() {
+	Layer * layer = document->GetActiveLayer();
+
+	if (!layer)
+		return;
+
+	// Don't add another Color Mixer
+	// if this layer already has one.
+
+	if (layer->GetEffect<ColorMixerEffect>())
+		return;
+
+	auto effect = std::make_unique<ColorMixerEffect>();
+
+	if (!effect->Setup()) {
+		ofLogError()
+			<< "Failed to setup Color Mixer effect.";
+
+		return;
+	}
+
+	layer->AddEffect(std::move(effect));
 }

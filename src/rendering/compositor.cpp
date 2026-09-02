@@ -106,3 +106,7 @@ void Compositor::Erase(Layer & layer, float x, float y, float radius, const ofFb
 	DrawBrush(x, y, radius, ofColor(255, 255, 255, 255));
 	Composite(layer, selectionMask, eraseShader);
 }
+
+void Compositor::ApplyShader(Layer& layer, ofShader& shader) {
+
+}

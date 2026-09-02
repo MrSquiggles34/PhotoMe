@@ -38,9 +38,15 @@ void Layer::SetImage(const ofImage & image) {
 		image.getWidth(),
 		image.getHeight());
 
-	ofSetColor(255);
-
 	fbo.end();
+
+	ofLogNotice()
+		<< "SET IMAGE LAYER "
+		<< id
+		<< " FBO TEX ID = "
+		<< fbo.getTexture()
+			   .getTextureData()
+			   .textureID;
 
 	hasImage = true;
 }
@@ -86,66 +92,18 @@ LayerID Layer::GetID() const {
 	return id;
 }
 
-std::vector<std::unique_ptr<LayerEffect>> & Layer::GetEffects() {
-	return effects;
+void Layer::SetEffect(std::unique_ptr<LayerEffect> newEffect) {
+	effect = std::move(newEffect);
 }
 
-const std::vector<std::unique_ptr<LayerEffect>> & Layer::GetEffects() const {
-	return effects;
+void Layer::RemoveEffect() {
+	effect.reset();
 }
 
-void Layer::ApplyEffects() {
-
-	if (effects.empty())
-		return;
-
-	int width = fbo.getWidth();
-	int height = fbo.getHeight();
-
-	if (effectBufferA.getWidth() != width || effectBufferA.getHeight() != height) {
-
-		effectBufferA.allocate(width, height, GL_RGBA8);
-		effectBufferB.allocate(width, height, GL_RGBA8);
-	}
-
-	// Start with the original layer.
-	effectBufferA.begin();
-	ofClear(0, 0, 0, 0);
-	fbo.draw(0, 0);
-	effectBufferA.end();
-
-	ofFbo * source = &effectBufferA;
-	ofFbo * destination = &effectBufferB;
-
-	for (auto & effect : effects) {
-
-		if (!effect)
-			continue;
-
-		effect->Apply(*source, *destination);
-
-		std::swap(source, destination);
-	}
-
-	// Copy final result back into the layer FBO.
-	fbo.begin();
-	ofClear(0, 0, 0, 0);
-	source->draw(0, 0);
-	fbo.end();
+LayerEffect * Layer::GetEffect() {
+	return effect.get();
 }
 
-void Layer::AddEffect(std::unique_ptr<LayerEffect> effect) {
-
-	if (!effect)
-		return;
-
-	effects.push_back(std::move(effect));
-}
-
-void Layer::RemoveEffect(int index) {
-
-	if (index < 0 || index >= static_cast<int>(effects.size()))
-		return;
-
-	effects.erase(effects.begin() + index);
+const LayerEffect * Layer::GetEffect() const {
+	return effect.get();
 }

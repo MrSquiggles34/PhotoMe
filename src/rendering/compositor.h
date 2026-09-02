@@ -14,6 +14,8 @@ public:
 
 	void Erase(Layer & layer, float x, float y, float radius, const ofFbo * selectionMask = nullptr);
 
+	void ApplyShader(Layer & layer, ofShader & shader);
+
 private:
 
 	void DrawBrush(float x, float y, float radius, const ofColor & color);

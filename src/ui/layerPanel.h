@@ -22,10 +22,12 @@ private:
 	void OnDeleteLayer();
 	void OnMoveLayerUp();
 	void OnMoveLayerDown();
+	void OnMergeLayerDown();
 
 	void OnBrushTool();
 	void OnEraserTool();
 	void OnRectangleSelectTool();
+	void OnStampTool();
 
 private:
 	Editor* editor = nullptr;
@@ -40,4 +42,6 @@ private:
 	QPushButton * brushButton = nullptr;
 	QPushButton * eraserButton = nullptr;
 	QPushButton * selectButton = nullptr;
+	QPushButton * StampButton = nullptr;
+	QPushButton * mergeDownButton = nullptr;
 };

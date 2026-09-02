@@ -35,6 +35,7 @@ public:
 
 	// Gets
 	const std::vector<Layer> & GetLayers() const;
+	std::vector<Layer> & GetLayers();
 
 	Layer * GetActiveLayer();
 	LayerID GetActiveLayerID() const;

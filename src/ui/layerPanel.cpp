@@ -10,10 +10,12 @@ LayerPanel::LayerPanel(Editor* editor, QWidget* parent): QWidget(parent), editor
 	deleteButton = new QPushButton("-", this);
 	upButton = new QPushButton("Up", this);
 	downButton = new QPushButton("Down", this);
+	mergeDownButton = new QPushButton("Merge Down", this);
 
 	brushButton = new QPushButton("Brush", this);
 	eraserButton = new QPushButton("Erase", this);
 	selectButton = new QPushButton("Select", this);
+	StampButton = new QPushButton("Stamp", this);
 
 	// Layer buttons
 	auto* buttonLayout = new QHBoxLayout();
@@ -21,12 +23,14 @@ LayerPanel::LayerPanel(Editor* editor, QWidget* parent): QWidget(parent), editor
 	buttonLayout->addWidget(deleteButton);
 	buttonLayout->addWidget(upButton);
 	buttonLayout->addWidget(downButton);
-
+	buttonLayout->addWidget(mergeDownButton);
+	
 	// Tool buttons
 	auto * toolButtonLayout = new QHBoxLayout();
 	toolButtonLayout->addWidget(brushButton);
 	toolButtonLayout->addWidget(eraserButton);
 	toolButtonLayout->addWidget(selectButton);
+	toolButtonLayout->addWidget(StampButton);
 
 	// Layout
 	auto* layout = new QVBoxLayout(this);
@@ -42,11 +46,13 @@ LayerPanel::LayerPanel(Editor* editor, QWidget* parent): QWidget(parent), editor
 	connect(deleteButton, &QPushButton::clicked, this, &LayerPanel::OnDeleteLayer);
 	connect(upButton, &QPushButton::clicked, this, &LayerPanel::OnMoveLayerUp);
 	connect(downButton, &QPushButton::clicked, this, &LayerPanel::OnMoveLayerDown);
+	connect(mergeDownButton, &QPushButton::clicked, this, &LayerPanel::OnMergeLayerDown);
 
 	// Tool buttons
 	connect(brushButton,&QPushButton::clicked, this, &LayerPanel::OnBrushTool);
 	connect(eraserButton, &QPushButton::clicked, this, &LayerPanel::OnEraserTool);
 	connect(selectButton, &QPushButton::clicked, this, &LayerPanel::OnRectangleSelectTool);
+	connect(StampButton, &QPushButton::clicked, this, &LayerPanel::OnStampTool);
 
 
 	Refresh();
@@ -134,4 +140,19 @@ void LayerPanel::OnEraserTool() {
 
 void LayerPanel::OnRectangleSelectTool() {
 	editor->SetRectangleSelectTool();
+}
+
+void LayerPanel::OnStampTool() {
+	editor->ToggleStampTool();
+}
+
+void LayerPanel::OnMergeLayerDown() {
+	auto * item = layerList->currentItem();
+
+	if (!item)
+		return;
+
+	LayerID id = item->data(Qt::UserRole).toULongLong();
+
+	editor->MergeDown(id);
 }

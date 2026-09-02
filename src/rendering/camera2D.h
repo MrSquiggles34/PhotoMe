@@ -10,7 +10,12 @@ struct Camera2D {
 		return (screen - position) / zoom;
 	}
 
-	glm::vec2 WorldToScreen(const glm::vec2& world) const {
+	glm::vec2 WorldToScreen(const glm::vec2 & world) const {
 		return world * zoom + position;
+	}
+
+	void Apply() const {
+		ofTranslate(position);
+		ofScale(zoom, zoom);
 	}
 };

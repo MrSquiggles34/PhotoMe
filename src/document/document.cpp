@@ -1,6 +1,5 @@
 #include "document.h"
 #include "layer.h"
-#include "../rendering/colorMixerEffect.h"
 
 Document::Document() {
 }
@@ -31,43 +30,47 @@ LayerID Document::AddLayer()
 }
 
 bool Document::AddImageLayer(const std::string & path) {
+
 	std::string resolvedPath = ofToDataPath(path, true);
 
 	ofImage image;
 
 	if (!image.load(resolvedPath)) {
-		ofLogError() << "Failed to load " << path;
+
+		ofLogError()
+			<< "Failed to load "
+			<< path;
+
 		return false;
 	}
 
 	// First imported image defines canvas size
 	if (!HasCanvas()) {
+
 		width = image.getWidth();
 		height = image.getHeight();
 	}
 
 	LayerID id = nextLayerID++;
 
-	Layer layer(width, height, id);
+	Layer layer(
+		width,
+		height,
+		id);
 
 	layer.SetName(
 		"Layer " + std::to_string(id));
 
 	layer.SetImage(image);
 
-	// TEMPORARY
-	auto colorMixer = std::make_unique<ColorMixerEffect>();
+	ofLogNotice()
+		<< "NEW LAYER CREATED: "
+		<< id
+		<< " FBO TEX ID = "
+		<< layer.GetFbo().getTexture().getTextureData().textureID;
 
-	if (colorMixer->Setup()) {
-
-		colorMixer->SetHue(0.0f);
-		colorMixer->SetSaturation(0.0f);
-		colorMixer->SetLuminance(0.0f);
-
-		layer.AddEffect(std::move(colorMixer));
-	}
-
-	layers.push_back(std::move(layer));
+	layers.push_back(
+		std::move(layer));
 
 	activeLayerID = id;
 
@@ -151,8 +154,15 @@ void Document::InsertLayer(size_t index, Layer layer) {
 Layer Document::TakeLayer(LayerID id) {
 	size_t index = GetLayerIndexByID(id);
 
+	if (index == layers.size()) {
+		throw std::runtime_error(
+			"Cannot take layer: layer not found.");
+	}
+
 	Layer layer = std::move(layers[index]);
-	layers.erase(layers.begin() + index);
+
+	layers.erase(
+		layers.begin() + index);
 
 	if (id == activeLayerID) {
 		if (!layers.empty())
@@ -185,7 +195,11 @@ Layer * Document::GetActiveLayer() {
 	return FindLayerByID(activeLayerID);
 }
 
-const std::vector<Layer>& Document::GetLayers() const {
+std::vector<Layer> & Document::GetLayers() {
+	return layers;
+}
+
+const std::vector<Layer> & Document::GetLayers() const {
 	return layers;
 }
 

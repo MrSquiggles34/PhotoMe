@@ -337,8 +337,12 @@ void Editor::MouseReleased(int x, int y) {
 }
 
 // Painting =================================================
-void Editor::PaintPoint(const ofVec2f & point, float radius, const ofColor & color, BrushMode mode) {
-
+void Editor::PaintPoint(
+	const ofVec2f & point,
+	float radius,
+	float hardness,
+	const ofColor & color,
+	BrushMode mode) {
 	Layer * layer = document->GetActiveLayer();
 
 	if (!layer)
@@ -350,6 +354,7 @@ void Editor::PaintPoint(const ofVec2f & point, float radius, const ofColor & col
 		return;
 
 	Selection * selection = GetSelection();
+
 	const ofFbo * selectionMask = nullptr;
 
 	if (selection && selection->IsActive()) {
@@ -357,13 +362,29 @@ void Editor::PaintPoint(const ofVec2f & point, float radius, const ofColor & col
 	}
 
 	if (mode == BrushMode::Paint) {
-		compositor->Paint(*layer, point.x, point.y, radius, color, selectionMask);
+
+		compositor->Paint(
+			*layer,
+			point.x,
+			point.y,
+			radius,
+			hardness,
+			color,
+			selectionMask);
+
 	} else {
-		compositor->Erase(*layer, point.x, point.y, radius, selectionMask);
+
+		compositor->Erase(
+			*layer,
+			point.x,
+			point.y,
+			radius,
+			hardness,
+			selectionMask);
 	}
 }
 
-void Editor::BeginBrushStroke(const ofVec2f & point, float radius, const ofColor & color, BrushMode mode) {
+void Editor::BeginBrushStroke(const ofVec2f & point, float radius, float hardness, const ofColor & color, BrushMode mode) {
 	Layer * layer = document->GetActiveLayer();
 
 	if (!layer)
@@ -383,7 +404,15 @@ void Editor::BeginBrushStroke(const ofVec2f & point, float radius, const ofColor
 		selectionMask = &selection->GetMask();
 	}
 
-	activeBrushStroke = std::make_unique<BrushStrokeCommand>(layer, compositor, std::vector<BrushPoint> {}, radius, color, mode, selection);
+	activeBrushStroke = std::make_unique<BrushStrokeCommand>(
+		layer,
+		compositor,
+		std::vector<BrushPoint> {},
+		radius,
+		hardness,
+		color,
+		mode,
+		selection);
 
 	activeBrushStroke->Begin();
 
@@ -391,13 +420,26 @@ void Editor::BeginBrushStroke(const ofVec2f & point, float radius, const ofColor
 
 	if (mode == BrushMode::Paint) {
 		ofLogNotice() << "CALLING COMPOSITOR PAINT";
-		compositor->Paint(*layer, point.x, point.y, radius, color, selectionMask);
+		compositor->Paint(
+			*layer,
+			point.x,
+			point.y,
+			radius,
+			hardness,
+			color,
+			selectionMask);
 	} else {
-		compositor->Erase(*layer, point.x, point.y, radius, selectionMask);
+		compositor->Erase(
+			*layer,
+			point.x,
+			point.y,
+			radius,
+			hardness,
+			selectionMask);
 	}
 }
 
-void Editor::ContinueBrushStroke(const ofVec2f & point, float radius, const ofColor & color, BrushMode mode) {
+void Editor::ContinueBrushStroke(const ofVec2f & point, float radius, float hardness, const ofColor & color, BrushMode mode) {
 	if (!activeBrushStroke)
 		return;
 
@@ -422,9 +464,22 @@ void Editor::ContinueBrushStroke(const ofVec2f & point, float radius, const ofCo
 	}
 
 	if (mode == BrushMode::Paint) {
-		compositor->Paint(*layer, point.x, point.y, radius, color, selectionMask);
+		compositor->Paint(
+			*layer,
+			point.x,
+			point.y,
+			radius,
+			hardness,
+			color,
+			selectionMask);
 	} else {
-		compositor->Erase(*layer, point.x, point.y, radius, selectionMask);
+		compositor->Erase(
+			*layer,
+			point.x,
+			point.y,
+			radius,
+			hardness,
+			selectionMask);
 	}
 }
 

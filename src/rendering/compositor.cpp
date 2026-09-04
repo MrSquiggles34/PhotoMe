@@ -19,6 +19,11 @@ bool Compositor::Setup(int width, int height) {
 		return false;
 	}
 
+	if (!brushShader.load("shaders/brush.vert", "shaders/brush.frag")) {
+		ofLogError() << "Failed to load brush shader.";
+		return false;
+	}
+
 	ofFbo::Settings settings;
 	settings.width = width;
 	settings.height = height;
@@ -33,16 +38,50 @@ bool Compositor::Setup(int width, int height) {
 	return true;
 }
 
-void Compositor::DrawBrush(float x, float y, float radius, const ofColor & color) {
-
+void Compositor::DrawBrush(
+	float x,
+	float y,
+	float radius,
+	float hardness,
+	const ofColor & color) {
 	brushFbo.begin();
 
 	ofClear(0, 0, 0, 0);
 
-	ofSetColor(color);
-	ofDrawCircle(x, y, radius);
+	brushShader.begin();
 
-	ofSetColor(255);
+	brushShader.setUniform2f(
+		"uResolution",
+		brushFbo.getWidth(),
+		brushFbo.getHeight());
+
+	brushShader.setUniform2f(
+		"uCenter",
+		x,
+		y);
+
+	brushShader.setUniform1f(
+		"uRadius",
+		radius);
+
+	brushShader.setUniform1f(
+		"uHardness",
+		hardness);
+
+	brushShader.setUniform4f(
+		"uColor",
+		color.r / 255.0f,
+		color.g / 255.0f,
+		color.b / 255.0f,
+		color.a / 255.0f);
+
+	ofDrawRectangle(
+		0,
+		0,
+		brushFbo.getWidth(),
+		brushFbo.getHeight());
+
+	brushShader.end();
 
 	brushFbo.end();
 }
@@ -95,16 +134,45 @@ void Compositor::Composite(Layer & layer, const ofFbo * selectionMask, ofShader 
 	destination.end();
 }
 
-void Compositor::Paint(Layer & layer, float x, float y, float radius, const ofColor & color, const ofFbo * selectionMask) {
+void Compositor::Paint(
+	Layer & layer,
+	float x,
+	float y,
+	float radius,
+	float hardness,
+	const ofColor & color,
+	const ofFbo * selectionMask) {
+	DrawBrush(
+		x,
+		y,
+		radius,
+		hardness,
+		color);
 
-	DrawBrush( x, y, radius, color);
-	Composite(layer, selectionMask, paintShader);
+	Composite(
+		layer,
+		selectionMask,
+		paintShader);
 }
 
-void Compositor::Erase(Layer & layer, float x, float y, float radius, const ofFbo * selectionMask) {
+void Compositor::Erase(
+	Layer & layer,
+	float x,
+	float y,
+	float radius,
+	float hardness,
+	const ofFbo * selectionMask) {
+	DrawBrush(
+		x,
+		y,
+		radius,
+		hardness,
+		ofColor(255, 255, 255, 255));
 
-	DrawBrush(x, y, radius, ofColor(255, 255, 255, 255));
-	Composite(layer, selectionMask, eraseShader);
+	Composite(
+		layer,
+		selectionMask,
+		eraseShader);
 }
 
 void Compositor::ApplyShader(Layer& layer, ofShader& shader) {

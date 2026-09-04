@@ -17,7 +17,15 @@ class Selection;
 
 class BrushStrokeCommand : public Command {
 public:
-	BrushStrokeCommand(Layer * layer, Compositor * compositor, const std::vector<BrushPoint> & points, float radius, const ofColor & color, BrushMode mode, const Selection * selection);
+	BrushStrokeCommand(
+		Layer * layer,
+		Compositor * compositor,
+		const std::vector<BrushPoint> & points,
+		float radius,
+		float hardness,
+		const ofColor & color,
+		BrushMode mode,
+		const Selection * selection);
 
 	void Execute() override;
 	void Undo() override;
@@ -34,6 +42,7 @@ private:
 
 	float radius;
 	ofColor color;
+	float hardness;
 
 	BrushMode mode;
 

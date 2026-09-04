@@ -1,8 +1,22 @@
 #include "brushStrokeCommand.h"
 #include "../document/selection.h"
 
-BrushStrokeCommand::BrushStrokeCommand(Layer * layer, Compositor * compositor, const std::vector<BrushPoint> & points, float radius, const ofColor & color, BrushMode mode, const Selection * selection)
-	: layer(layer), compositor(compositor), points(points), radius(radius) , color(color) , mode(mode) {
+BrushStrokeCommand::BrushStrokeCommand(
+	Layer * layer,
+	Compositor * compositor,
+	const std::vector<BrushPoint> & points,
+	float radius,
+	float hardness,
+	const ofColor & color,
+	BrushMode mode,
+	const Selection * selection)
+	: layer(layer)
+	, compositor(compositor)
+	, points(points)
+	, radius(radius)
+	, hardness(hardness)
+	, color(color)
+	, mode(mode) {
 	if (selection && selection->IsActive()) {
 
 		selectionMask.allocate(selection->GetMask().getWidth(), selection->GetMask().getHeight(), GL_R8);
@@ -29,9 +43,22 @@ void BrushStrokeCommand::Execute() {
 
 	for (const BrushPoint & point : points) {
 		if (mode == BrushMode::Paint) {
-			compositor->Paint(*layer, point.position.x, point.position.y, radius, color, mask);
+			compositor->Paint(
+				*layer,
+				point.position.x,
+				point.position.y,
+				radius,
+				hardness,
+				color,
+				mask);
 		} else {
-			compositor->Erase(*layer, point.position.x, point.position.y, radius, mask);
+			compositor->Erase(
+				*layer,
+				point.position.x,
+				point.position.y,
+				radius,
+				hardness,
+				mask);
 		}
 	}
 }

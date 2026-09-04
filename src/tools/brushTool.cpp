@@ -13,7 +13,7 @@ void BrushTool::MousePressed(int x, int y) {
 	lastPoint = ofVec2f(world.x, world.y);
 
 	float radius = size * 0.5f;
-	editor->BeginBrushStroke(lastPoint, radius, color, mode);
+	editor->BeginBrushStroke(lastPoint, radius, hardness, color, mode);
 }
 
 void BrushTool::MouseDragged(int x, int y) {
@@ -38,7 +38,7 @@ void BrushTool::MouseDragged(int x, int y) {
 
 			ofVec2f point = lastPoint.getInterpolated(current, t);
 
-			editor->ContinueBrushStroke(point, radius, color, mode);
+			editor->ContinueBrushStroke(point, radius, hardness, color, mode);
 		}
 	}
 
@@ -65,7 +65,7 @@ void BrushTool::MouseReleased(int x, int y) {
 
 			ofVec2f point = lastPoint.getInterpolated(current, t);
 
-			editor->ContinueBrushStroke(point, radius, color, mode);
+			editor->ContinueBrushStroke(point, radius, hardness, color, mode);
 		}
 	}
 

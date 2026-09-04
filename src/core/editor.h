@@ -56,9 +56,14 @@ class Editor {
 		void RefreshLayerPanel();
 		void MoveActiveLayer(float deltaX, float deltaY);
 
-		void PaintPoint(const ofVec2f & point, float radius, const ofColor & color, BrushMode mode);
-		void BeginBrushStroke(const ofVec2f & point, float radius, const ofColor & color, BrushMode mode);
-		void ContinueBrushStroke(const ofVec2f & point, float radius, const ofColor & color, BrushMode mode);
+		void PaintPoint(const ofVec2f & point, float radius, float hardness, const ofColor & color, BrushMode mode);
+		void BeginBrushStroke(const ofVec2f & point, float radius, float hardness, const ofColor & color, BrushMode mode);
+		void ContinueBrushStroke(
+			const ofVec2f & point,
+			float radius,
+			float hardness,
+			const ofColor & color,
+			BrushMode mode);
 		void FinishBrushStroke();
 
 		void ToggleBrushMode();

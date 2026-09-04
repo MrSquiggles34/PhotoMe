@@ -15,9 +15,12 @@
 #include "../commands/moveLayerUpCommand.h"
 #include "../commands/moveLayerDownCommand.h"
 #include "../commands/brushStrokeCommand.h"
+#include "../commands/mergeDownCommand.h"
 
 #include "../rendering/colorMixerEffect.h"
 #include "../ui/colorMixerPanel.h"
+#include "../rendering/customShaderEffect.h"
+#include "../ui/customShaderPanel.h"
 
 Editor::Editor() = default;
 Editor::~Editor() = default;
@@ -34,13 +37,14 @@ void Editor::Setup() {
 
 	compositor = std::make_unique<Compositor>();
 
+	// Layers panel
 	layerPanel = std::make_unique<LayerPanel>(this);
 	layerPanel->resize(300, 500);
 	layerPanel->show();
 
-	colorMixerPanel = std::make_unique<ColorMixerPanel>(this);
-	colorMixerPanel->resize(300, 250);
-	colorMixerPanel->show();
+	// Custom shader panel
+	customShaderPanel = std::make_unique<CustomShaderPanel>(this);
+	customShaderPanel->resize(300, 200);
 }
 
 void Editor::Update() {
@@ -129,6 +133,10 @@ Selection* Editor::GetSelection() {
 
 Compositor* Editor::GetCompositor() {
 	return compositor.get();
+}
+
+CustomShaderPanel* Editor::GetCustomShaderPanel() {
+	return customShaderPanel.get();
 }
 
 // Sets =================================================
@@ -239,9 +247,6 @@ void Editor::RecordCommand(std::unique_ptr<Command> command) {
 
 void Editor::SetActiveLayer(LayerID id) {
 	document->SetActiveLayer(id);
-
-	if (colorMixerPanel)
-		colorMixerPanel->Refresh();
 }
 
 
@@ -423,25 +428,77 @@ void Editor::ClearSelection() {
 
 // Shaders ===================================================
 void Editor::AddColorMixerEffect() {
+
 	Layer * layer = document->GetActiveLayer();
 
 	if (!layer)
 		return;
 
-	// Don't add another Color Mixer
-	// if this layer already has one.
-
-	if (layer->GetEffect<ColorMixerEffect>())
-		return;
-
 	auto effect = std::make_unique<ColorMixerEffect>();
 
 	if (!effect->Setup()) {
+
 		ofLogError()
 			<< "Failed to setup Color Mixer effect.";
 
 		return;
 	}
 
-	layer->AddEffect(std::move(effect));
+	layer->SetEffect(std::move(effect));
+}
+
+bool Editor::AddCustomShader(
+	const std::string & fragmentPath) {
+
+	ofLogNotice() << "A";
+
+	Layer * layer = document->GetActiveLayer();
+
+	ofLogNotice() << "B";
+
+	if (!layer)
+		return false;
+
+	ofLogNotice() << "C";
+
+	auto effect = std::make_unique<CustomShaderEffect>();
+
+	ofLogNotice() << "D";
+
+	if (!effect->Setup(fragmentPath)) {
+
+		ofLogError()
+			<< "Custom shader setup failed.";
+
+		return false;
+	}
+
+	ofLogNotice() << "E";
+
+	layer->SetEffect(std::move(effect));
+
+	ofLogNotice() << "F";
+
+	return true;
+}
+
+// Merge Down ========================================
+void Editor::MergeDown(LayerID layerID) {
+	auto command = std::make_unique<MergeDownCommand>(
+		*document,
+		*renderer,
+		layerID);
+
+	commandManager->Execute(
+		std::move(command));
+
+	layerPanel->Refresh();
+}
+
+void Editor::ToggleCustomShaderPanel() {
+	if (!customShaderPanel)
+		return;
+
+	customShaderPanel->setVisible(
+		!customShaderPanel->isVisible());
 }

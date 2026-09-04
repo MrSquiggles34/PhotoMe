@@ -21,6 +21,7 @@ class Command;
 class BrushStrokeCommand;
 class Compositor;
 class ColorMixerPanel;
+class CustomShaderPanel;
 
 class Editor {
 	public:
@@ -56,10 +57,14 @@ class Editor {
 		void FinishBrushStroke();
 
 		void ToggleBrushMode();
+		void ToggleCustomShaderPanel();
 
 		void ClearSelection();
 
 		void AddColorMixerEffect();
+		bool AddCustomShader(const std::string & fragmentPath);
+
+		void MergeDown(LayerID layerID);
 
 		Document* GetDocument();
 		Renderer* GetRenderer();
@@ -68,6 +73,7 @@ class Editor {
 		ToolManager * GetToolManager();
 		Selection * GetSelection();
 		Compositor * GetCompositor();
+		CustomShaderPanel * GetCustomShaderPanel();
 
 		std::vector<LayerInfo> GetLayerInfo() const;
 
@@ -85,6 +91,6 @@ class Editor {
 		std::unique_ptr<BrushStrokeCommand> activeBrushStroke;
 		std::unique_ptr<Selection> selection;
 		std::unique_ptr<Compositor> compositor;
-		std::unique_ptr<ColorMixerPanel> colorMixerPanel;
+		std::unique_ptr<CustomShaderPanel> customShaderPanel;
 
 };

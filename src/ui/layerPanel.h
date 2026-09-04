@@ -29,6 +29,8 @@ private:
 	void OnRectangleSelectTool();
 	void OnStampTool();
 
+	void OnShaderButton();
+
 private:
 	Editor* editor = nullptr;
 
@@ -44,4 +46,6 @@ private:
 	QPushButton * selectButton = nullptr;
 	QPushButton * StampButton = nullptr;
 	QPushButton * mergeDownButton = nullptr;
+
+	QPushButton * customShaderButton = nullptr;
 };

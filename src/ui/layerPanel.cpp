@@ -17,6 +17,8 @@ LayerPanel::LayerPanel(Editor* editor, QWidget* parent): QWidget(parent), editor
 	selectButton = new QPushButton("Select", this);
 	StampButton = new QPushButton("Stamp", this);
 
+	customShaderButton = new QPushButton("Custom Shader", this);
+
 	// Layer buttons
 	auto* buttonLayout = new QHBoxLayout();
 	buttonLayout->addWidget(addButton);
@@ -37,6 +39,7 @@ LayerPanel::LayerPanel(Editor* editor, QWidget* parent): QWidget(parent), editor
 	layout->addWidget(layerList);
 	layout->addLayout(buttonLayout);
 	layout->addLayout(toolButtonLayout);
+	layout->addWidget(customShaderButton);
 
 	setLayout(layout);
 
@@ -54,6 +57,7 @@ LayerPanel::LayerPanel(Editor* editor, QWidget* parent): QWidget(parent), editor
 	connect(selectButton, &QPushButton::clicked, this, &LayerPanel::OnRectangleSelectTool);
 	connect(StampButton, &QPushButton::clicked, this, &LayerPanel::OnStampTool);
 
+	connect(customShaderButton, &QPushButton::clicked, this, &LayerPanel::OnShaderButton);
 
 	Refresh();
 }
@@ -155,4 +159,11 @@ void LayerPanel::OnMergeLayerDown() {
 	LayerID id = item->data(Qt::UserRole).toULongLong();
 
 	editor->MergeDown(id);
+}
+
+void LayerPanel::OnShaderButton() {
+	if (!editor)
+		return;
+
+	editor->ToggleCustomShaderPanel();
 }

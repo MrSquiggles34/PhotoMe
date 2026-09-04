@@ -1,0 +1,29 @@
+{
+  "name": "Color Mixer",
+  "parameters": [
+    {
+      "name": "uHue",
+      "type": "float",
+      "label": "Hue",
+      "min": -180.0,
+      "max": 180.0,
+      "default": 0.0
+    },
+    {
+      "name": "uSaturation",
+      "type": "float",
+      "label": "Saturation",
+      "min": -1.0,
+      "max": 1.0,
+      "default": 0.0
+    },
+    {
+      "name": "uLuminance",
+      "type": "float",
+      "label": "Luminance",
+      "min": -1.0,
+      "max": 1.0,
+      "default": 0.0
+    }
+  ]
+}

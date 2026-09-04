@@ -1,0 +1,33 @@
+{
+  "name": "Parameter Test",
+  "parameters": [
+    {
+      "name": "uAmount",
+      "type": "float",
+      "label": "Brightness",
+      "min": 0.0,
+      "max": 2.0,
+      "default": 1.0
+    },
+    {
+      "name": "uSteps",
+      "type": "int",
+      "label": "Color Steps",
+      "min": 1,
+      "max": 32,
+      "default": 32
+    },
+    {
+      "name": "uInvert",
+      "type": "bool",
+      "label": "Invert",
+      "default": false
+    },
+    {
+      "name": "uTint",
+      "type": "color",
+      "label": "Tint",
+      "default": [ 1.0, 1.0, 1.0, 1.0 ]
+    }
+  ]
+}

@@ -22,6 +22,7 @@ class BrushStrokeCommand;
 class Compositor;
 class ColorMixerPanel;
 class CustomShaderPanel;
+class BrushPanel;
 
 class Editor {
 	public:
@@ -32,11 +33,14 @@ class Editor {
 		void Update();
 		void Draw();
 
-
 		void SetCameraPosition();
 		void SetCameraZoom();
 
 		void SetBrushTool();
+		void SetBrushSize(float size);
+		void SetBrushHardness(float hardness);
+		void SetBrushColor(const ofColor & color);
+
 		void SetRectangleSelectTool();
 		void ToggleStampTool();
 
@@ -50,6 +54,7 @@ class Editor {
 		void MoveLayerDown(LayerID id);
 		void SetActiveLayer(LayerID id);
 		void RefreshLayerPanel();
+		void MoveActiveLayer(float deltaX, float deltaY);
 
 		void PaintPoint(const ofVec2f & point, float radius, const ofColor & color, BrushMode mode);
 		void BeginBrushStroke(const ofVec2f & point, float radius, const ofColor & color, BrushMode mode);
@@ -58,6 +63,7 @@ class Editor {
 
 		void ToggleBrushMode();
 		void ToggleCustomShaderPanel();
+		void ToggleBrushPanel();
 
 		void ClearSelection();
 
@@ -65,6 +71,10 @@ class Editor {
 		bool AddCustomShader(const std::string & fragmentPath);
 
 		void MergeDown(LayerID layerID);
+
+		// Serialization
+		bool SaveProject(const std::string & path);
+		bool LoadProject(const std::string & path);
 
 		Document* GetDocument();
 		Renderer* GetRenderer();
@@ -74,6 +84,7 @@ class Editor {
 		Selection * GetSelection();
 		Compositor * GetCompositor();
 		CustomShaderPanel * GetCustomShaderPanel();
+		BrushPanel * GetBrushPanel();
 
 		std::vector<LayerInfo> GetLayerInfo() const;
 
@@ -92,5 +103,6 @@ class Editor {
 		std::unique_ptr<Selection> selection;
 		std::unique_ptr<Compositor> compositor;
 		std::unique_ptr<CustomShaderPanel> customShaderPanel;
+		std::unique_ptr<BrushPanel> brushPanel;
 
 };

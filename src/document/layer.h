@@ -54,6 +54,11 @@ public:
 	void SetOpacity(float opacity);
 	void SetName(const std::string & name);
 
+	void Resize(int width, int height);
+
+	void SetPosition(const glm::vec2 & position);
+	void SetPosition(float x, float y);
+
 	// --------------------------------------------------
 	// Gets
 	// --------------------------------------------------
@@ -66,13 +71,18 @@ public:
 
 	float GetOpacity() const;
 	const std::string & GetName() const;
+
 	LayerID GetID() const;
+
+	const glm::vec2 & GetPosition() const;
 
 private:
 	std::string name = "Layer";
 
 	bool visible = true;
 	float opacity = 1.0f;
+
+	glm::vec2 position = glm::vec2(0.0f);
 
 	ofFbo fbo;
 	ofTexture texture;

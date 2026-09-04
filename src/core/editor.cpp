@@ -21,6 +21,9 @@
 #include "../ui/colorMixerPanel.h"
 #include "../rendering/customShaderEffect.h"
 #include "../ui/customShaderPanel.h"
+#include "../ui/brushPanel.h"
+
+#include "../serializer/ProjectSerializer.h"
 
 Editor::Editor() = default;
 Editor::~Editor() = default;
@@ -45,6 +48,11 @@ void Editor::Setup() {
 	// Custom shader panel
 	customShaderPanel = std::make_unique<CustomShaderPanel>(this);
 	customShaderPanel->resize(300, 200);
+
+	// Brush Panel
+	brushPanel = std::make_unique<BrushPanel>(this);
+	brushPanel->resize(300, 200);
+	brushPanel->hide();
 }
 
 void Editor::Update() {
@@ -226,6 +234,8 @@ bool Editor::AddImageLayer(const std::string & path) {
 
 		compositor->Setup(document->GetWidth(), document->GetHeight());
 
+		ofSetWindowShape( document->GetWidth(), document->GetHeight());
+
 		layerPanel->Refresh();
 	}
 
@@ -247,6 +257,24 @@ void Editor::RecordCommand(std::unique_ptr<Command> command) {
 
 void Editor::SetActiveLayer(LayerID id) {
 	document->SetActiveLayer(id);
+}
+
+void Editor::MoveActiveLayer(
+	float deltaX,
+	float deltaY) {
+	Layer * layer = document->GetActiveLayer();
+
+	if (!layer)
+		return;
+
+	glm::vec2 position = layer->GetPosition();
+
+	position.x += deltaX;
+	position.y += deltaY;
+
+	document->MoveLayerImage(
+		layer->GetID(),
+		position);
 }
 
 
@@ -418,6 +446,46 @@ void Editor::ToggleBrushMode() {
 	brush->ToggleMode();
 }
 
+void Editor::ToggleBrushPanel() {
+	if (!brushPanel)
+		return;
+
+	if (brushPanel->isVisible())
+		brushPanel->hide();
+	else
+		brushPanel->show();
+}
+
+void Editor::SetBrushSize(float size) {
+	BrushTool * brushTool = dynamic_cast<BrushTool *>(
+		toolManager->GetTool());
+
+	if (!brushTool)
+		return;
+
+	brushTool->SetSize(size);
+}
+
+void Editor::SetBrushHardness(float hardness) {
+	BrushTool * brushTool = dynamic_cast<BrushTool *>(
+		toolManager->GetTool());
+
+	if (!brushTool)
+		return;
+
+	brushTool->SetHardness(hardness);
+}
+
+void Editor::SetBrushColor(const ofColor & color) {
+	BrushTool * brushTool = dynamic_cast<BrushTool *>(
+		toolManager->GetTool());
+
+	if (!brushTool)
+		return;
+
+	brushTool->SetColor(color);
+}
+
 // Selection =================================================
 void Editor::ClearSelection() {
 	if (!selection)
@@ -501,4 +569,39 @@ void Editor::ToggleCustomShaderPanel() {
 
 	customShaderPanel->setVisible(
 		!customShaderPanel->isVisible());
+}
+
+// Serialize Project =======================================
+bool Editor::SaveProject(
+	const std::string & path) {
+	if (!document)
+		return false;
+
+	return ProjectSerializer::Save(
+		*document,
+		path);
+}
+
+bool Editor::LoadProject(
+	const std::string & path) {
+	if (!document)
+		return false;
+
+	bool success = ProjectSerializer::Load(
+		*document,
+		path);
+
+	if (success) {
+		selection->Allocate(
+			document->GetWidth(),
+			document->GetHeight());
+
+		compositor->Setup(
+			document->GetWidth(),
+			document->GetHeight());
+
+		layerPanel->Refresh();
+	}
+
+	return success;
 }

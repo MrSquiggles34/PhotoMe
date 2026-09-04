@@ -44,11 +44,22 @@ bool Document::AddImageLayer(const std::string & path) {
 		return false;
 	}
 
-	// First imported image defines canvas size
-	if (!HasCanvas()) {
+		// The document grows to fit the largest
+	// width and height imported so far.
+	int newWidth = std::max(
+		width,
+		static_cast<int>(image.getWidth()));
 
-		width = image.getWidth();
-		height = image.getHeight();
+	int newHeight = std::max(
+		height,
+		static_cast<int>(image.getHeight()));
+
+	// Resize the document and all existing layers
+	// if the imported image is larger.
+	if (newWidth != width || newHeight != height) {
+		Resize(
+			newWidth,
+			newHeight);
 	}
 
 	LayerID id = nextLayerID++;
@@ -137,6 +148,17 @@ void Document::RemoveLayer(LayerID id) {
 	}
 }
 
+void Document::MoveLayerImage(
+	LayerID id,
+	const glm::vec2 & position) {
+	Layer * layer = FindLayerByID(id);
+
+	if (!layer)
+		return;
+
+	layer->SetPosition(position);
+}
+
 size_t Document::GetLayerIndexByID(LayerID id) const {
 	for (size_t i = 0; i < layers.size(); ++i) {
 		if (layers[i].GetID() == id)
@@ -189,6 +211,35 @@ void Document::SetActiveLayer(LayerID id) {
 		activeLayerID = id;
 }
 
+void Document::SetSize(int width, int height) {
+	this->width = width;
+	this->height = height;
+}
+
+void Document::SetNextLayerID(LayerID id) {
+	nextLayerID = id;
+}
+
+void Document::Resize(int width, int height) {
+	if (width <= 0 || height <= 0)
+		return;
+
+	if (width <= this->width && height <= this->height) {
+		return;
+	}
+
+	for (Layer & layer : layers) {
+		layer.Resize(width, height);
+	}
+
+	this->width = std::max(
+		this->width,
+		width);
+
+	this->height = std::max(
+		this->height,
+		height);
+}
 
 // Gets
 Layer * Document::GetActiveLayer() {

@@ -20,18 +20,6 @@ void ofApp::draw() {
 }
 
 void ofApp::keyPressed(int key) {
-	if (key == 'j') {
-		editor->AddImageLayer("test.png");
-	}
-
-	if (key == 'k') {
-		editor->AddImageLayer("test2.png");
-	}
-
-	if (key == 'l') {
-		editor->AddImageLayer("test3.png");
-	}
-
 	if (key == 'v') {
 		editor->GetDocument()->GetActiveLayer()->SetVisible(!editor->GetDocument()->GetActiveLayer()->IsVisible());
 	}
@@ -44,6 +32,30 @@ void ofApp::keyPressed(int key) {
 	if (key == 'y') {
 		editor->GetCommandManager()->Redo();
 		editor->RefreshLayerPanel();
+	}
+
+	if (key == 't') {
+		editor->MoveActiveLayer(
+			0.0f,
+			-10.0f);
+	}
+
+	if (key == 'g') {
+		editor->MoveActiveLayer(
+			0.0f,
+			10.0f);
+	}
+
+	if (key == 'f') {
+		editor->MoveActiveLayer(
+			-10.0f,
+			0.0f);
+	}
+
+	if (key == 'h') {
+		editor->MoveActiveLayer(
+			10.0f,
+			0.0f);
 	}
 }
 

@@ -134,6 +134,7 @@ void Renderer::RenderLayer(
 
 	const int width = destination.getWidth();
 	const int height = destination.getHeight();
+	const glm::vec2 & position = layer.GetPosition();
 
 	LayerEffect * effect = layer.GetEffect();
 
@@ -150,8 +151,8 @@ void Renderer::RenderLayer(
 				255.0f * layer.GetOpacity()));
 
 		layer.GetFbo().draw(
-			0,
-			0,
+			position.x,
+			position.y,
 			width,
 			height);
 
@@ -178,8 +179,8 @@ void Renderer::RenderLayer(
 			255.0f * layer.GetOpacity()));
 
 	effectFbo.draw(
-		0,
-		0,
+		position.x,
+		position.y,
 		width,
 		height);
 

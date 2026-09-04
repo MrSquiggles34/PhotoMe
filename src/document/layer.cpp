@@ -63,6 +63,58 @@ void Layer::SetName(const string & name) {
 	this->name = name;
 }
 
+
+void Layer::SetEffect(std::unique_ptr<LayerEffect> newEffect) {
+	effect = std::move(newEffect);
+}
+
+void Layer::SetPosition(const glm::vec2 & position) {
+	this->position = position;
+}
+
+void Layer::SetPosition(float x, float y) {
+	position = glm::vec2(x, y);
+}
+
+void Layer::Resize(int width, int height) {
+	if (width <= 0 || height <= 0)
+		return;
+
+	if (fbo.getWidth() == width && fbo.getHeight() == height) {
+		return;
+	}
+
+	ofFbo newFbo;
+
+	ofFbo::Settings settings;
+
+	settings.width = width;
+	settings.height = height;
+	settings.internalformat = GL_RGBA8;
+	settings.useDepth = false;
+	settings.useStencil = false;
+	settings.textureTarget = GL_TEXTURE_2D;
+	settings.numSamples = 0;
+
+	newFbo.allocate(settings);
+
+	newFbo.begin();
+
+	ofClear(0, 0, 0, 0);
+
+	ofSetColor(255);
+
+	fbo.draw(
+		0,
+		0,
+		fbo.getWidth(),
+		fbo.getHeight());
+
+	newFbo.end();
+
+	fbo = std::move(newFbo);
+}
+
 // Gets
 ofFbo& Layer::GetFbo() {
 	return fbo;
@@ -92,10 +144,6 @@ LayerID Layer::GetID() const {
 	return id;
 }
 
-void Layer::SetEffect(std::unique_ptr<LayerEffect> newEffect) {
-	effect = std::move(newEffect);
-}
-
 void Layer::RemoveEffect() {
 	effect.reset();
 }
@@ -106,4 +154,8 @@ LayerEffect * Layer::GetEffect() {
 
 const LayerEffect * Layer::GetEffect() const {
 	return effect.get();
+}
+
+const glm::vec2 & Layer::GetPosition() const {
+	return position;
 }

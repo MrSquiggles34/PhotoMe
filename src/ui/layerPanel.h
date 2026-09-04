@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QFileDialog>
 
 class Editor;
 
@@ -25,11 +26,17 @@ private:
 	void OnMergeLayerDown();
 
 	void OnBrushTool();
+	void OnBrushSettingsButton();
 	void OnEraserTool();
 	void OnRectangleSelectTool();
 	void OnStampTool();
 
 	void OnShaderButton();
+	void OnImageButton();
+
+	void OnSaveProject();
+	void OnLoadProject();
+
 
 private:
 	Editor* editor = nullptr;
@@ -42,10 +49,16 @@ private:
 	QPushButton* downButton = nullptr;
 
 	QPushButton * brushButton = nullptr;
+	QPushButton * brushSettingsButton = nullptr;
 	QPushButton * eraserButton = nullptr;
 	QPushButton * selectButton = nullptr;
 	QPushButton * StampButton = nullptr;
 	QPushButton * mergeDownButton = nullptr;
 
 	QPushButton * customShaderButton = nullptr;
+	QPushButton * newImageButton = nullptr;
+
+	QPushButton * saveButton = nullptr;
+	QPushButton * loadButton = nullptr;
+
 };

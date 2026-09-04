@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 #include "layer.h"
 
@@ -17,6 +18,7 @@ public:
 	void RemoveLayer(LayerID id);
 	void MoveLayerUp(LayerID id);
 	void MoveLayerDown(LayerID id);
+	void MoveLayerImage(LayerID id, const glm::vec2 & position);
 
 
 	Layer* FindLayerByID(LayerID id);
@@ -31,6 +33,9 @@ public:
 
 	// Sets
 	void SetActiveLayer(LayerID id);
+	void SetSize(int width, int height);
+	void SetNextLayerID(LayerID id);
+	void Resize(int width, int height);
 
 
 	// Gets

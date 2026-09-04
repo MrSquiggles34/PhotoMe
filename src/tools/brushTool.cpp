@@ -12,6 +12,7 @@ void BrushTool::MousePressed(int x, int y) {
 
 	lastPoint = ofVec2f(world.x, world.y);
 
+	float radius = size * 0.5f;
 	editor->BeginBrushStroke(lastPoint, radius, color, mode);
 }
 
@@ -26,6 +27,7 @@ void BrushTool::MouseDragged(int x, int y) {
 	float distance = lastPoint.distance(current);
 
 	// Distance between brush dabs.
+	float radius = size * 0.5f;
 	float spacing = radius * 0.25f;
 
 	if (distance > 0.0f) {
@@ -52,6 +54,7 @@ void BrushTool::MouseReleased(int x, int y) {
 	ofVec2f current(world.x, world.y);
 
 	float distance = lastPoint.distance(current);
+	float radius = size * 0.5f;
 	float spacing = radius * 0.25f;
 
 	if (distance > 0.0f) {
@@ -80,4 +83,31 @@ void BrushTool::ToggleMode() {
 		mode = BrushMode::Erase;
 	else
 		mode = BrushMode::Paint;
+}
+
+void BrushTool::SetSize(float size) {
+	this->size = std::max(1.0f, size);
+}
+
+void BrushTool::SetHardness(float hardness) {
+	this->hardness = ofClamp(
+		hardness,
+		0.0f,
+		1.0f);
+}
+
+void BrushTool::SetColor(const ofColor & color) {
+	this->color = color;
+}
+
+float BrushTool::GetSize() const {
+	return size;
+}
+
+float BrushTool::GetHardness() const {
+	return hardness;
+}
+
+const ofColor & BrushTool::GetColor() const {
+	return color;
 }
